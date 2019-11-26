@@ -5,6 +5,7 @@ namespace L2C.Budget.BL.Model
     /// <summary>
     /// Пользователь.
     /// </summary>
+    [Serializable]
     public class User
     {
         /// <summary>

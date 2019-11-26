@@ -5,6 +5,7 @@ namespace L2C.Budget.BL.Model
     /// <summary>
     /// Пол.
     /// </summary>
+    [Serializable]
     public class Gender
     {
         /// <summary>
