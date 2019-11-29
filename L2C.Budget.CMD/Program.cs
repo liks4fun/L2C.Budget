@@ -32,10 +32,13 @@ namespace L2C.Budget.CMD
                     {
                         Console.WriteLine(ex.Message);
                         var genderName = GetUserInput($"{userName}, давайте зарегистриуем вас. Введите свой пол:");
+
+                        //TODO: вынести в отдельный метод с проверкой.
                         var year = int.Parse(GetUserInput($"Введите год Вашего рождения:"));
                         var month = int.Parse(GetUserInput("Введите месяц Вашего рождения в цифарх:"));
                         var day = int.Parse(GetUserInput("Введите день Вашего рождения в цифрах:"));
                         DateTime birthday = new DateTime(year, month, day);
+
                         var budgetName = GetUserInput("Введите имя для своего бюджета:");
                         try
                         {

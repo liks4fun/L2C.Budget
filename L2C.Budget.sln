@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L2C.Budget.BL", "L2C.Budget.BL\L2C.Budget.BL.csproj", "{298DDB19-7344-441F-8630-862DE9569E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L2C.Budget.BL", "L2C.Budget.BL\L2C.Budget.BL.csproj", "{298DDB19-7344-441F-8630-862DE9569E27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L2C.Budget.CMD", "L2C.Budget.CMD\L2C.Budget.CMD.csproj", "{04D364F2-DA50-4C57-A592-B7FEF784517D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L2C.Budget.CMD", "L2C.Budget.CMD\L2C.Budget.CMD.csproj", "{04D364F2-DA50-4C57-A592-B7FEF784517D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L2C.Budget.Tests", "L2C.Budget.Tests\L2C.Budget.Tests.csproj", "{A61001F5-484E-4FB3-92F2-AA2C011A3282}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{04D364F2-DA50-4C57-A592-B7FEF784517D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04D364F2-DA50-4C57-A592-B7FEF784517D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04D364F2-DA50-4C57-A592-B7FEF784517D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A61001F5-484E-4FB3-92F2-AA2C011A3282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61001F5-484E-4FB3-92F2-AA2C011A3282}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61001F5-484E-4FB3-92F2-AA2C011A3282}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61001F5-484E-4FB3-92F2-AA2C011A3282}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
