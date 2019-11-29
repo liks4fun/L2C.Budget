@@ -23,6 +23,15 @@ namespace L2C.Budget.BL.Model
         /// </summary>
         public DateTime BirthDate { get; }
 
+        public int Age { get
+            {
+                var today = DateTime.Today;
+                int age = today.Year - BirthDate.Year;
+                if (BirthDate > today.AddYears(-age)) age--;
+                return age;
+            }
+        }
+
         /// <summary>
         /// Бюджет пользователя.
         /// </summary>
@@ -73,7 +82,7 @@ namespace L2C.Budget.BL.Model
 
         public override string ToString()
         {
-            return Name;
+            return Name + " " + Age;
         }
     }
 }
