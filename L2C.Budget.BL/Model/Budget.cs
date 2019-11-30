@@ -28,7 +28,7 @@ namespace L2C.Budget.BL.Model
             {
                 throw new ArgumentNullException("Имя не может быть пустым или null", nameof(name));
             }
-
+            Name = name;
             Balance = 0.0f;
         }
     }

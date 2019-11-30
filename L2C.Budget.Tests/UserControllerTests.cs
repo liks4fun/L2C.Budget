@@ -1,38 +1,38 @@
-п»їusing L2C.Budget.BL.Controller;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using L2C.Budget.BL.Controller;
+using NUnit.Framework;
 using System;
 
-namespace L2C.Budget.Tests
+namespace Tests
 {
-    [TestClass]
-    class UserControllerTests
+    [TestFixture]
+    public class UserControllerTests
     {
-        [TestMethod]
+        [Test]
         public void SaveTest()
         {
-            //Arrange СЂР°РЅРґРѕРјРЅС‹Рµ РґР°РЅРЅС‹Рµ РґР»СЏ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+            //Arrange рандомные данные для нового пользователя.
             var userName = Guid.NewGuid().ToString();
             var genderName = Guid.NewGuid().ToString();
             var birthday = DateTime.Now.AddYears(-18);
             var budgetName = Guid.NewGuid().ToString();
 
-            //Act
+            //Act проверяем сразу 2 конструктора для нового и для существующего пользователя
             UserController controller = new UserController(userName, genderName, birthday, budgetName);
             UserController controller2 = new UserController(userName);
 
             //Assert
             var user1 = controller.CurrentUser;
             var user2 = controller.CurrentUser;
-            Assert.AreEqual(user1.Name, userName);
-            Assert.AreEqual(user2.Name, userName);
-            Assert.AreEqual(user1.Gender.Name, genderName);
-            Assert.AreEqual(user2.Gender.Name, genderName);
-            Assert.AreEqual(user1.Budget.Name, budgetName);
-            Assert.AreEqual(user2.Budget.Name, budgetName);
-            Assert.AreEqual(user1.BirthDate, birthday);
-            Assert.AreEqual(user2.BirthDate, birthday);
+            Assert.AreEqual(userName, user1.Name);
+            Assert.AreEqual(userName, user2.Name);
+            Assert.AreEqual(genderName, user1.Gender.Name);
+            Assert.AreEqual(genderName, user2.Gender.Name);
+            Assert.AreEqual(budgetName, user1.Budget.Name);
+            Assert.AreEqual(budgetName, user2.Budget.Name);
+            Assert.AreEqual(birthday, user1.BirthDate);
+            Assert.AreEqual(birthday, user2.BirthDate);
 
-            //РЈРґР°Р»СЏСЋ С‚РµСЃС‚РѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІС‚Р°РµР»СЏ РёР· С„Р°Р№Р»Р°
+            //Удаляю тестового пользовтаеля из файла
             controller2.Users.Remove(user2);
             controller2.Save();
         }
