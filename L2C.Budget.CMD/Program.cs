@@ -1,6 +1,7 @@
 ﻿using L2C.Budget.BL.Controller;
 using L2C.Budget.BL.Utils;
 using System;
+using System.Text;
 
 namespace L2C.Budget.CMD
 {
@@ -8,6 +9,7 @@ namespace L2C.Budget.CMD
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("Добро пожаловать в приложение для учёта бюджета - BUDGET-40000");
 
             var userName = GetUserInput("Введите Ваше имя пользователя:");
