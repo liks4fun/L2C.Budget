@@ -1,6 +1,9 @@
-using L2C.Budget.BL.Controller;
+п»їusing L2C.Budget.BL.Controller;
+using L2C.Budget.BL.Model;
+using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -8,33 +11,74 @@ namespace Tests
     public class UserControllerTests
     {
         [Test]
-        public void SaveTest()
+        public void AddMoneyTest()
         {
-            //Arrange рандомные данные для нового пользователя.
-            var userName = Guid.NewGuid().ToString();
-            var genderName = Guid.NewGuid().ToString();
-            var birthday = DateTime.Now.AddYears(-18);
-            var budgetName = Guid.NewGuid().ToString();
+            //Arrange
+            var controller = GetUserController();
+            float monneyCount = 666.6f;
+            float moneyCountExpected = 1000 + monneyCount;
 
-            //Act проверяем сразу 2 конструктора для нового и для существующего пользователя
-            UserController controller = new UserController(userName, genderName, birthday, budgetName);
-            UserController controller2 = new UserController(userName);
+            //Act СЋР·РµСЂ mock1 СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РІ GetUserController
+            controller.AuthenUser("mock1");
+            controller.AddMoney(monneyCount);
+            var (_, _, balance) = controller.GetUserBalance();
 
             //Assert
-            var user1 = controller.CurrentUser;
-            var user2 = controller.CurrentUser;
-            Assert.AreEqual(userName, user1.Name);
-            Assert.AreEqual(userName, user2.Name);
-            Assert.AreEqual(genderName, user1.Gender.Name);
-            Assert.AreEqual(genderName, user2.Gender.Name);
-            Assert.AreEqual(budgetName, user1.Budget.Name);
-            Assert.AreEqual(budgetName, user2.Budget.Name);
-            Assert.AreEqual(birthday, user1.BirthDate);
-            Assert.AreEqual(birthday, user2.BirthDate);
+            Assert.AreEqual(moneyCountExpected, balance);
+        }
 
-            //Удаляю тестового пользовтаеля из файла
-            controller2.Users.Remove(user2);
-            controller2.Save();
+        [Test]
+        public void RemoveMoneyTest()
+        {
+            //Arrange
+            var controller = GetUserController();
+            float monneyCount = 666.6f;
+            float moneyCountExpected = 1000 - monneyCount;
+
+            //Act СЋР·РµСЂ mock1 СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РІ GetUserController
+            controller.AuthenUser("mock1");
+            controller.RemoveMoney(monneyCount);
+            var (_, _, balance) = controller.GetUserBalance();
+
+            //Assert
+            Assert.AreEqual(moneyCountExpected, balance);
+        }
+
+        [Test]
+        public void CreateNewUserTest()
+        {
+            //Arrange
+            var mUser = new User("mock",
+                    new Gender("MGender"),
+                    DateTime.Today.AddYears(-21),
+                    new Budget("MBudget"));
+            var controller = GetUserController();
+
+            //Act
+            controller.CreateNewUser(mUser.Name, 
+                mUser.Gender.Name, 
+                mUser.BirthDate, 
+                mUser.Budget.Name);
+            controller.AuthenUser(mUser.Name);
+            var (userName, budgetName, balance) = controller.GetUserBalance();
+
+            //Assert
+            Assert.AreEqual(mUser.Name, userName);
+            Assert.AreEqual(mUser.Budget.Name, budgetName);
+            Assert.AreEqual(mUser.Budget.Balance, balance);
+        }
+
+        private UserController GetUserController()
+        {
+            var mUser1 = new User("mock1",
+                    new Gender("M1Gender"),
+                    DateTime.Today.AddYears(-20),
+                    new Budget("M1Budget"));
+            mUser1.Budget.Balance += 1000f;
+            var mock = new Mock<IRepository>();
+            mock.Setup(r => r.GetUsers()).Returns(new List<User> { mUser1 });
+            var controller = new UserController(mock.Object);
+            return controller;
         }
     }
 }

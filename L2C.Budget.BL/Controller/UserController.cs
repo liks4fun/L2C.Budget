@@ -13,34 +13,47 @@ namespace L2C.Budget.BL.Controller
     /// </summary>
     public class UserController
     {
+        public delegate void BalanceHandler(string mes);
         /// <summary>
-        /// Пользователь приложения.
+        /// Событие для уведомления об изменении баланса.
         /// </summary>
-        public List<User> Users { get; }
-        public User CurrentUser { get; }
+        public event BalanceHandler Notify;
+
+        private IRepository repository;
+
+        /// <summary>
+        /// Текущий пользователь.
+        /// </summary>
+        private User CurrentUser { get; set; }
+
+        /// <summary>
+        /// Аутентифицирован ли пользователь.
+        /// </summary>
+        public bool IsUserAuthen => CurrentUser is User ? true : false;
+
+        /// <summary>
+        /// Список всех пользователей.
+        /// </summary>
+        private List<User> Users { get; set; }
 
         /// <summary>
         /// Создание нового контроллера пользователя.
         /// </summary>
         /// <param name="user"></param>
-        public UserController(string userName)
+        public UserController(IRepository repo)
         {
-            if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentNullException(nameof(userName), "Имя пользователя не может быть пустым");
-            Users = GetUsersFromFile();
-            CurrentUser = Users.SingleOrDefault(u => u.Name == userName);
-            if (CurrentUser == null)
-                throw new NewUserException($"Пользователя с именем {userName} нет в базе данных");
+            repository = repo;
+            Users = repository.GetUsers();
         }
 
         /// <summary>
-        /// Инициализация контроллера с регистрацией нового пользователя.
+        /// Создание нового пользователя.
         /// </summary>
         /// <param name="userName">Имя нового пользователя.</param>
         /// <param name="genderName">Пол.</param>
         /// <param name="birthday">Дата рождения.</param>
         /// <param name="budgetName">Имя бюджета.</param>
-        public UserController(string userName, string genderName, DateTime birthday, string budgetName)
+        public void CreateNewUser(string userName, string genderName, DateTime birthday, string budgetName)
         {
             if(string.IsNullOrWhiteSpace(genderName))
                 throw new ArgumentNullException(nameof(genderName), "Пол пользователя не может быть пустым.");
@@ -48,41 +61,69 @@ namespace L2C.Budget.BL.Controller
                 throw new ArgumentNullException(nameof(budgetName), "Имя бюджета не может быть пустым.");
             if (birthday.Year < 1900 || birthday > DateTime.Now)
                 throw new ArgumentException(nameof(birthday), "Не верная дата рождения.");
+            if (Users.Contains(Users.SingleOrDefault(u => u.Name == userName)))
+                throw new ArgumentException(nameof(userName), "Пользователь с таким именем уже существует");
             Gender gender = new Gender(genderName);
             L2C.Budget.BL.Model.Budget budget = new L2C.Budget.BL.Model.Budget(budgetName);
-            CurrentUser = new User(userName, gender, birthday, budget);
-            Users = GetUsersFromFile();
-            Users.Add(CurrentUser);
-            Save();
-
+            var user = new User(userName, gender, birthday, budget);
+            Users.Add(user);
+            repository.SaveUsers(Users);
         }
 
         /// <summary>
-        /// Сохранить данные пользователя в файл.
+        /// Аутентифицирует текущего пользователя.
         /// </summary>
-        public void Save()
+        /// <param name="userName">Имя пользователя.</param>
+        public void AuthenUser(string userName)
         {
-            var formatter = new BinaryFormatter();
-            using(var fs = new FileStream("users.bin", FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(fs, Users);
-            }
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new ArgumentNullException(nameof(userName), "Имя пользователя не может быть пустым");
+            var user = repository.GetUsers().SingleOrDefault(u => u.Name == userName);
+            if (user == null)
+                throw new NewUserException($"Пользователь с именем {userName} не зарегистрирован");
+            else
+                CurrentUser = user;
         }
 
         /// <summary>
-        /// Загрузить пользователей из файла.
+        /// Добавляет дене в бюджет пользователя.
         /// </summary>
-        /// <returns>Пользователь приложения.</returns>
-        public List<User> GetUsersFromFile()
+        /// <param name="amount">Кол-во денег.</param>
+        public void AddMoney(float amount)
         {
-            var formatter = new BinaryFormatter();
-            using (var fs = new FileStream("users.bin", FileMode.OpenOrCreate))
-            {
-                if (fs.Length > 0 && formatter.Deserialize(fs) is List<User> users)
-                    return users;
-                else
-                    return new List<User>();
-            }
+            if (amount <= 0)
+                throw new ArgumentException("Неверное кол-во денег", nameof(amount));
+            if (CurrentUser == null || CurrentUser.Budget == null)
+                throw new ArgumentNullException(nameof(CurrentUser), "Неверные данные пользователя");
+            CurrentUser.Budget.Balance += amount;
+            repository.SaveUsers(Users);
+            Notify?.Invoke($"{CurrentUser.Name} пополнил бюджет {CurrentUser.Budget.Name} на {amount}. Баланс: {CurrentUser.Budget.Balance}uah.");
+        }
+
+        /// <summary>
+        /// Снимает деньги с бюджета пользователя.
+        /// </summary>
+        /// <param name="amount">Кол-во денег.</param>
+        public void RemoveMoney(float amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Неверное кол-во денег", nameof(amount));
+            if (CurrentUser == null || CurrentUser.Budget == null)
+                throw new ArgumentNullException(nameof(CurrentUser), "Неверные данные пользователя");
+            CurrentUser.Budget.Balance -= amount;
+            repository.SaveUsers(Users);
+            Notify?.Invoke($"{CurrentUser.Name} снял с бюджета {CurrentUser.Budget.Name} {amount}uah. Баланс: {CurrentUser.Budget.Balance}uah.");
+        }
+
+        /// <summary>
+        /// Получить состояние баланса пользователя.
+        /// </summary>
+        /// <returns>Кортеж (имя пользователя, баланс пользователя)</returns>
+        public (string userName, string budgetName, float balance) GetUserBalance()
+        {
+            if (CurrentUser == null)
+                throw new ArgumentNullException(nameof(CurrentUser), "Неверные данные текущего пользователя");
+            return (userName: CurrentUser.Name, budgetName: CurrentUser.Budget.Name, balance: CurrentUser.Budget.Balance);
         }
 
     }
