@@ -2,6 +2,8 @@
 using L2C.Budget.BL.Model;
 using L2C.Budget.BL.Utils;
 using System;
+using System.Globalization;
+using System.Resources;
 using System.Text;
 
 namespace L2C.Budget.CMD
@@ -10,10 +12,21 @@ namespace L2C.Budget.CMD
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine("Добро пожаловать в приложение для учёта бюджета - BUDGET-40000");
+            CultureInfo culture;
+            var cultureNames = new string[] { "ru-RU", "en-US" };
+            int pos = Array.IndexOf(args, cultureNames[0]);
+            if (pos > -1)
+                culture = CultureInfo.CreateSpecificCulture(args[pos]);
+            else if ((pos = Array.IndexOf(args, cultureNames[1])) > -1)
+                culture = CultureInfo.CreateSpecificCulture(args[pos]);
+            else
+                culture = CultureInfo.CurrentCulture;
 
-            var userName = GetUserInput("Введите Ваше имя пользователя:");
+            var resourceManager = new ResourceManager("L2C.Budget.CMD.Resources.Lang", typeof(Program).Assembly);
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine(resourceManager.GetString("Hello", culture));
+
+            var userName = GetUserInput(resourceManager.GetString("EnterName", culture));
             UserController controller = new UserController(new FileRepository());
 
             //Аутентифицируем пользователя.
@@ -26,21 +39,21 @@ namespace L2C.Budget.CMD
                 catch (ArgumentNullException ex)
                 {
                     Console.WriteLine(ex.Message);
-                    userName = GetUserInput("Введите Ваше имя пользователя:");
+                    userName = GetUserInput(resourceManager.GetString("EnterName", culture));
                     continue;
                 }
                 catch (NewUserException ex)
                 {
                     Console.WriteLine(ex.Message);
-                    var genderName = GetUserInput($"{userName}, давайте зарегистриуем вас. Введите свой пол:");
+                    var genderName = GetUserInput($"{userName}, " + resourceManager.GetString("RegisterGender", culture));
 
                     //TODO: вынести в отдельный метод с проверкой.
-                    var year = int.Parse(GetUserInput($"Введите год Вашего рождения:"));
-                    var month = int.Parse(GetUserInput("Введите месяц Вашего рождения в цифарх:"));
-                    var day = int.Parse(GetUserInput("Введите день Вашего рождения в цифрах:"));
+                    var year = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthYear", culture)));
+                    var month = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthMonth", culture)));
+                    var day = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthDay", culture)));
                     DateTime birthday = new DateTime(year, month, day);
 
-                    var budgetName = GetUserInput("Введите имя для своего бюджета:");
+                    var budgetName = GetUserInput(resourceManager.GetString("RegisterBudgetName", culture));
                     try
                     {
                         controller.CreateNewUser(userName, genderName, birthday, budgetName);
@@ -48,7 +61,7 @@ namespace L2C.Budget.CMD
                     catch (Exception except)
                     {
                         Console.WriteLine(except.Message);
-                        Console.WriteLine("Давай попробуем ещё раз, введите имя пользователя:");
+                        Console.WriteLine(resourceManager.GetString("RegisterRestart", culture));
                         userName = Console.ReadLine();
                         continue;
                     }
@@ -56,20 +69,23 @@ namespace L2C.Budget.CMD
             }
             while (!controller.IsUserAuthen);
 
+            //Основной  цикл
             while (true)
             {
                 var userState = controller.GetUserBalance();
-                Console.WriteLine("q - выйти из приложения");
-                Console.WriteLine("а - добавить денег на баланс");
-                Console.WriteLine("r - снять денег с баланса");
-                Console.WriteLine($"{userState.userName}, в Вашем бюджете {userState.budgetName} {userState.balance}uah");
+                Console.WriteLine(resourceManager.GetString("HelpQuit", culture));
+                Console.WriteLine(resourceManager.GetString("HelpAddMoney", culture));
+                Console.WriteLine(resourceManager.GetString("HelpWithdrawMoney", culture));
+                Console.WriteLine($"{userState.userName}" + 
+                    resourceManager.GetString("DisplayState", culture) + 
+                    $" {userState.budgetName} {userState.balance:c}");
                 switch(Console.ReadLine())
                 {
                     case "q":
                         Environment.Exit(0);
                         break;
                     case "a":
-                        Console.WriteLine("Введите сумму для зачисления:");
+                        Console.WriteLine(resourceManager.GetString("AddMoney", culture));
                         var addAmount = Console.ReadLine();
                         float AddAmountF = 0f;
                         if (float.TryParse(addAmount, out AddAmountF))
@@ -84,10 +100,10 @@ namespace L2C.Budget.CMD
                             }
                         }
                         else
-                            Console.WriteLine("Не верная сумма.");
+                            Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
                         break;
                     case "r":
-                            Console.WriteLine("Введите сумму для снятия:");
+                            Console.WriteLine(resourceManager.GetString("WithdrawMoney", culture));
                             var removeAmount = Console.ReadLine();
                             float removeAmountF = 0f;
                             if (float.TryParse(removeAmount, out removeAmountF))
@@ -102,10 +118,10 @@ namespace L2C.Budget.CMD
                                 }
                             }
                             else
-                                Console.WriteLine("Не верная сумма.");
+                                Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
                             break;
                     default:
-                        Console.WriteLine("Не верная команда.");
+                        Console.WriteLine(resourceManager.GetString("ErrorInput", culture));
                         break;
 
                 }
