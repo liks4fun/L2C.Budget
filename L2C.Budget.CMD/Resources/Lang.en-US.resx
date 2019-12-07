@@ -126,11 +126,41 @@
   <data name="EnterName" xml:space="preserve">
     <value>Enter username:</value>
   </data>
+  <data name="ErrorAddMoneyAmount" xml:space="preserve">
+    <value>You cann't add negative number or zero.</value>
+  </data>
   <data name="ErrorAmount" xml:space="preserve">
     <value>Wrong amount.</value>
   </data>
+  <data name="ErrorBirthday" xml:space="preserve">
+    <value>Wrong birth date</value>
+  </data>
+  <data name="ErrorBudgetName" xml:space="preserve">
+    <value>Budget name can't be empty.</value>
+  </data>
+  <data name="ErrorGenderName" xml:space="preserve">
+    <value>Gender can't be empty</value>
+  </data>
   <data name="ErrorInput" xml:space="preserve">
     <value>Wrong input.</value>
+  </data>
+  <data name="ErrorUser" xml:space="preserve">
+    <value>Wrong user data.</value>
+  </data>
+  <data name="ErrorUserExist" xml:space="preserve">
+    <value>There's no user with username - </value>
+  </data>
+  <data name="ErrorUserName" xml:space="preserve">
+    <value>Username already taken.</value>
+  </data>
+  <data name="ErrorUserState" xml:space="preserve">
+    <value>User isn't initialized</value>
+  </data>
+  <data name="ErrorWidthdrawMoneyAmount" xml:space="preserve">
+    <value>You cann't withdraw negative number or zero.</value>
+  </data>
+  <data name="ErrorWrongUserName" xml:space="preserve">
+    <value>Username can't be empty.</value>
   </data>
   <data name="Hello" xml:space="preserve">
     <value>Welcome to the awesome budget management app - BUDGET-40K</value>

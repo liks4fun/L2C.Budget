@@ -12,6 +12,7 @@ namespace L2C.Budget.CMD
     {
         static void Main(string[] args)
         {
+            #region Основные параметры
             CultureInfo culture;
             var cultureNames = new string[] { "ru-RU", "en-US" };
             int pos = Array.IndexOf(args, cultureNames[0]);
@@ -24,6 +25,8 @@ namespace L2C.Budget.CMD
 
             var resourceManager = new ResourceManager("L2C.Budget.CMD.Resources.Lang", typeof(Program).Assembly);
             Console.OutputEncoding = Encoding.UTF8;
+            #endregion
+
             Console.WriteLine(resourceManager.GetString("Hello", culture));
 
             var userName = GetUserInput(resourceManager.GetString("EnterName", culture));
@@ -36,15 +39,15 @@ namespace L2C.Budget.CMD
                 {
                     controller.AuthenUser(userName);
                 }
-                catch (ArgumentNullException ex)
+                catch (ArgumentNullException)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(resourceManager.GetString("ErrorWrongUserName", culture));
                     userName = GetUserInput(resourceManager.GetString("EnterName", culture));
                     continue;
                 }
-                catch (NewUserException ex)
+                catch (NewUserException)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(resourceManager.GetString("ErrorUserExist", culture) + userName);
                     var genderName = GetUserInput($"{userName}, " + resourceManager.GetString("RegisterGender", culture));
 
                     //TODO: вынести в отдельный метод с проверкой.
@@ -58,9 +61,25 @@ namespace L2C.Budget.CMD
                     {
                         controller.CreateNewUser(userName, genderName, birthday, budgetName);
                     }
-                    catch (Exception except)
+                    catch (ArgumentException except)
                     {
-                        Console.WriteLine(except.Message);
+                        switch(except.ParamName)
+                        {
+                            case "userName":
+                                Console.WriteLine(resourceManager.GetString("ErrorUserName", culture));
+                                break;
+                            case "genderName":
+                                Console.WriteLine(resourceManager.GetString("ErrorGenderName", culture));
+                                break;
+                            case "birthday":
+                                Console.WriteLine(resourceManager.GetString("ErrorBirthday", culture));
+                                break;
+                            case "budgetName":
+                                Console.WriteLine(resourceManager.GetString("ErrorBudgetName", culture));
+                                break;
+                            default:
+                                break;
+                        }
                         Console.WriteLine(resourceManager.GetString("RegisterRestart", culture));
                         userName = Console.ReadLine();
                         continue;
@@ -72,37 +91,49 @@ namespace L2C.Budget.CMD
             //Основной  цикл
             while (true)
             {
-                var userState = controller.GetUserBalance();
-                Console.WriteLine(resourceManager.GetString("HelpQuit", culture));
-                Console.WriteLine(resourceManager.GetString("HelpAddMoney", culture));
-                Console.WriteLine(resourceManager.GetString("HelpWithdrawMoney", culture));
-                Console.WriteLine($"{userState.userName}" + 
-                    resourceManager.GetString("DisplayState", culture) + 
-                    $" {userState.budgetName} {userState.balance:c}");
-                switch(Console.ReadLine())
+                try
                 {
-                    case "q":
-                        Environment.Exit(0);
-                        break;
-                    case "a":
-                        Console.WriteLine(resourceManager.GetString("AddMoney", culture));
-                        var addAmount = Console.ReadLine();
-                        float AddAmountF = 0f;
-                        if (float.TryParse(addAmount, out AddAmountF))
-                        {
-                            try
+                    var userState = controller.GetUserBalance(); 
+                    Console.WriteLine(resourceManager.GetString("HelpQuit", culture));
+                    Console.WriteLine(resourceManager.GetString("HelpAddMoney", culture));
+                    Console.WriteLine(resourceManager.GetString("HelpWithdrawMoney", culture));
+                    Console.WriteLine($"{userState.userName}" +
+                        resourceManager.GetString("DisplayState", culture) +
+                        $" {userState.budgetName} {userState.balance:c}");
+                    switch (Console.ReadLine())
+                    {
+                        case "q":
+                            Environment.Exit(0);
+                            break;
+                        case "a":
+                            Console.WriteLine(resourceManager.GetString("AddMoney", culture));
+                            var addAmount = Console.ReadLine();
+                            float AddAmountF = 0f;
+                            if (float.TryParse(addAmount, out AddAmountF))
                             {
-                                controller.AddMoney(AddAmountF);
+                                try
+                                {
+                                    controller.AddMoney(AddAmountF);
+                                }
+                                catch (ArgumentException ex)
+                                {
+                                    switch (ex.ParamName)
+                                    {
+                                        case "amount":
+                                            Console.WriteLine(resourceManager.GetString("ErrorAddMoneyAmount", culture));
+                                            break;
+                                        case "Name":
+                                            Console.WriteLine(resourceManager.GetString("ErrorUser", culture));
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.Message);
-                            }
-                        }
-                        else
-                            Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
-                        break;
-                    case "r":
+                            else
+                                Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
+                            break;
+                        case "r":
                             Console.WriteLine(resourceManager.GetString("WithdrawMoney", culture));
                             var removeAmount = Console.ReadLine();
                             float removeAmountF = 0f;
@@ -112,19 +143,37 @@ namespace L2C.Budget.CMD
                                 {
                                     controller.RemoveMoney(removeAmountF);
                                 }
-                                catch (Exception ex)
+
+                                catch (ArgumentException ex)
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    switch (ex.ParamName)
+                                    {
+                                        case "amount":
+                                            Console.WriteLine(resourceManager.GetString("ErrorWithdrawMoneyAmount", culture));
+                                            break;
+                                        case "Name":
+                                            Console.WriteLine(resourceManager.GetString("ErrorUser", culture));
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 }
                             }
                             else
                                 Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
                             break;
-                    default:
-                        Console.WriteLine(resourceManager.GetString("ErrorInput", culture));
-                        break;
+                        default:
+                            Console.WriteLine(resourceManager.GetString("ErrorInput", culture));
+                            break;
 
+                    }
                 }
+                catch
+                {
+                    Console.WriteLine(resourceManager.GetString("ErrorUserState", culture));
+                    continue;
+                }
+                
             }
         }
 

@@ -126,11 +126,41 @@
   <data name="EnterName" xml:space="preserve">
     <value>Введите Ваше имя пользователя:</value>
   </data>
+  <data name="ErrorAddMoneyAmount" xml:space="preserve">
+    <value>Нельзя добавить отрицательное число или ноль.</value>
+  </data>
   <data name="ErrorAmount" xml:space="preserve">
     <value>Не верная сумма.</value>
   </data>
+  <data name="ErrorBirthday" xml:space="preserve">
+    <value>Не верная дата рождения.</value>
+  </data>
+  <data name="ErrorBudgetName" xml:space="preserve">
+    <value>Имя бюджета не может быть пустым.</value>
+  </data>
+  <data name="ErrorGenderName" xml:space="preserve">
+    <value>Пол не может быть пустым.</value>
+  </data>
   <data name="ErrorInput" xml:space="preserve">
     <value>Не верная команда.</value>
+  </data>
+  <data name="ErrorUser" xml:space="preserve">
+    <value>Неверные данные пользователя</value>
+  </data>
+  <data name="ErrorUserExist" xml:space="preserve">
+    <value>Пользователь с таким именем не зарегистрирован - </value>
+  </data>
+  <data name="ErrorUserName" xml:space="preserve">
+    <value>Пользователь с таким именем уже существует.</value>
+  </data>
+  <data name="ErrorUserState" xml:space="preserve">
+    <value>Пользователь не инициализирован.</value>
+  </data>
+  <data name="ErrorWidthdrawMoneyAmount" xml:space="preserve">
+    <value>Нельзя снять отрицательное число или ноль.</value>
+  </data>
+  <data name="ErrorWrongUserName" xml:space="preserve">
+    <value>Имя пользователя не может быть пустым</value>
   </data>
   <data name="Hello" xml:space="preserve">
     <value>Добро пожаловать в приложение для учёта бюджета - BUDGET-40000</value>
