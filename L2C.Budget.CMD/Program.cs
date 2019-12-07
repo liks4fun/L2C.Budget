@@ -18,10 +18,8 @@ namespace L2C.Budget.CMD
             int pos = Array.IndexOf(args, cultureNames[0]);
             if (pos > -1)
                 culture = CultureInfo.CreateSpecificCulture(args[pos]);
-            else if ((pos = Array.IndexOf(args, cultureNames[1])) > -1)
-                culture = CultureInfo.CreateSpecificCulture(args[pos]);
             else
-                culture = CultureInfo.CurrentCulture;
+                culture = CultureInfo.CreateSpecificCulture("en-US");
 
             var resourceManager = new ResourceManager("L2C.Budget.CMD.Resources.Lang", typeof(Program).Assembly);
             Console.OutputEncoding = Encoding.UTF8;
@@ -63,7 +61,7 @@ namespace L2C.Budget.CMD
                     }
                     catch (ArgumentException except)
                     {
-                        switch(except.ParamName)
+                        switch(except.Message)
                         {
                             case "userName":
                                 Console.WriteLine(resourceManager.GetString("ErrorUserName", culture));
@@ -117,7 +115,7 @@ namespace L2C.Budget.CMD
                                 }
                                 catch (ArgumentException ex)
                                 {
-                                    switch (ex.ParamName)
+                                    switch (ex.Message)
                                     {
                                         case "amount":
                                             Console.WriteLine(resourceManager.GetString("ErrorAddMoneyAmount", culture));
@@ -146,7 +144,7 @@ namespace L2C.Budget.CMD
 
                                 catch (ArgumentException ex)
                                 {
-                                    switch (ex.ParamName)
+                                    switch (ex.Message)
                                     {
                                         case "amount":
                                             Console.WriteLine(resourceManager.GetString("ErrorWithdrawMoneyAmount", culture));
