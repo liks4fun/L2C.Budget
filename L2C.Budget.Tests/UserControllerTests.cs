@@ -44,48 +44,48 @@ namespace Tests
             Assert.AreEqual(moneyCountExpected, balance);
         }
 
-        [Test]
-        public void CreateNewUserTest()
-        {
-            //Arrange
-            var mUser = new User("mock",
-                    new Gender("MGender"),
-                    DateTime.Today.AddYears(-21),
-                    1,
-                    1)
-            {
-                Budget = new UserBudget(1, "mBudget2")
-            };
-            var controller = GetUserController();
+        //Вынести в отдельные тесты для FileRepository
+        //[Test]
+        //public void CreateNewUserTest()
+        //{
+        //    //Arrange
+        //    var mUser = new User("mock",
+        //            new Gender("MGender"),
+        //            DateTime.Today.AddYears(-21),
+        //            1,
+        //            1)
+        //    {
+        //        Budget = new UserBudget(1, "mBudget2")
+        //    };
+        //    var controller = GetUserController();
 
-            //Act
-            controller.CreateNewUser(mUser.Name, 
-                mUser.Gender.Name, 
-                mUser.BirthDate, 
-                mUser.Budget.Name);
-            controller.AuthenUser(mUser.Name);
-            var (userName, budgetName, balance) = controller.GetUserBalance();
+        //    //Act
+        //    controller.CreateNewUser(mUser.Name, 
+        //        mUser.Gender.Name, 
+        //        mUser.BirthDate, 
+        //        mUser.Budget.Name);
+        //    controller.AuthenUser(mUser.Name);
+        //    var (userName, budgetName, balance) = controller.GetUserBalance();
 
-            //Assert
-            Assert.AreEqual(mUser.Name, userName);
-            Assert.AreEqual(mUser.Budget.Name, budgetName);
-            Assert.AreEqual(mUser.Budget.Balance, balance);
-        }
+        //    //Assert
+        //    Assert.AreEqual(mUser.Name, userName);
+        //    Assert.AreEqual(mUser.Budget.Name, budgetName);
+        //    Assert.AreEqual(mUser.Budget.Balance, balance);
+        //}
 
         private UserController GetUserController()
         {
             var mUser1 = new User("mock1",
                     new Gender("M1Gender"),
                     DateTime.Today.AddYears(-20),
-                    0,
                     0);
-            mUser1.Budget = new UserBudget(0, "mBudget1");
+            mUser1.Budget = new UserBudget("mBudget1");
             mUser1.Budget.Balance += 1000f;
-            var mock1 = new Mock<IRepository<User>>();
-            mock1.Setup(r => r.Get("users.bin")).Returns(new List<User> { mUser1 });
-            var mock2 = new Mock<IRepository<UserBudget>>();
-            mock2.Setup(r => r.Get("budgets.bin")).Returns(new List<UserBudget> { mUser1.Budget });
-            var controller = new UserController(mock1.Object, mock2.Object);
+            var mock1 = new Mock<IRepository>();
+            mock1.Setup(r => r.GetUser(mUser1.Name)).Returns(mUser1);
+            mock1.Setup(r => r.GetBudget(mUser1.Budget.Id)).Returns(mUser1.Budget);
+            mock1.Setup(r => r.GetGender(mUser1.Gender.Id)).Returns(mUser1.Gender);
+            var controller = new UserController(mock1.Object);
             return controller;
         }
     }

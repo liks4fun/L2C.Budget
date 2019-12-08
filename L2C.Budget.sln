@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L2C.Budget.BL", "L2C.Budget
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L2C.Budget.CMD", "L2C.Budget.CMD\L2C.Budget.CMD.csproj", "{04D364F2-DA50-4C57-A592-B7FEF784517D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L2C.Budget.Tests", "L2C.Budget.Tests\L2C.Budget.Tests.csproj", "{90BA96F5-B74E-4440-A603-DAD36BFD0BD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L2C.Budget.Tests", "L2C.Budget.Tests\L2C.Budget.Tests.csproj", "{90BA96F5-B74E-4440-A603-DAD36BFD0BD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

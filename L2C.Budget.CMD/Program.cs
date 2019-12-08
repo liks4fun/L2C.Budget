@@ -1,6 +1,7 @@
 ﻿using L2C.Budget.BL.Controller;
 using L2C.Budget.BL.Model;
 using L2C.Budget.BL.Utils;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Resources;
@@ -13,6 +14,10 @@ namespace L2C.Budget.CMD
         static void Main(string[] args)
         {
             #region Основные параметры
+            var serviceProvider = new ServiceCollection()
+                    .AddSingleton<IRepository, EFRepository>()
+                    .BuildServiceProvider();
+                
             CultureInfo culture;
             var cultureNames = new string[] { "ru-RU", "en-US" };
             int pos = Array.IndexOf(args, cultureNames[0]);
@@ -28,7 +33,8 @@ namespace L2C.Budget.CMD
             Console.WriteLine(resourceManager.GetString("Hello", culture));
 
             var userName = GetUserInput(resourceManager.GetString("EnterName", culture));
-            UserController controller = new UserController(new FileRepository<User>(), new FileRepository<UserBudget>());
+            IRepository repo = serviceProvider.GetService<IRepository>();
+            UserController controller = new UserController(repo);
 
             //Аутентифицируем пользователя.
             do

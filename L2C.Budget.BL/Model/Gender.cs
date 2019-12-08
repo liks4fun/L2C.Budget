@@ -9,9 +9,14 @@ namespace L2C.Budget.BL.Model
     public class Gender
     {
         /// <summary>
+        /// Идентификатор пола.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Название.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Создать новый пол.
@@ -26,6 +31,8 @@ namespace L2C.Budget.BL.Model
 
             Name = name;
         }
+
+        public Gender() { }
 
         public override string ToString()
         {

@@ -11,21 +11,30 @@ namespace L2C.Budget.BL.Model
         /// <summary>
         /// Идентификатор пользователя
         /// </summary>
-        public int Id { get; }
+        public int Id { get; set; }
         /// <summary>
         /// Имя пользователя.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Пол пользователя.
         /// </summary>
-        public Gender Gender { get; }
+        [field: NonSerialized]
+        public Gender Gender { get; set; }
+        public int GenderId { get; set; }
+
+        /// <summary>
+        /// Бюджет пользователя.
+        /// </summary>
+        [field: NonSerialized]
+        public UserBudget Budget { get; set; }
+        public int BudgetId { get; set; }
 
         /// <summary>
         /// Дата рождения пользователя.
         /// </summary>
-        public DateTime BirthDate { get; }
+        public DateTime BirthDate { get; set; }
 
         public int Age { get
             {
@@ -35,13 +44,6 @@ namespace L2C.Budget.BL.Model
                 return age;
             }
         }
-
-        [field: NonSerialized]
-        /// <summary>
-        /// Бюджет пользователя.
-        /// </summary>
-        public UserBudget Budget { get; set; }
-        public int BudgetId { get; }
 
         /// <summary>
         /// Создать нового пользователя.
@@ -53,8 +55,7 @@ namespace L2C.Budget.BL.Model
         public User(string name,
                     Gender gender,
                     DateTime birthDate,
-                    int budgetId,
-                    int id)
+                    int budgetId)
         {
             #region Проверка входящих параметров.
             if (string.IsNullOrEmpty(name))
@@ -81,8 +82,10 @@ namespace L2C.Budget.BL.Model
             Gender = gender;
             BirthDate = birthDate;
             BudgetId = budgetId;
-            Id = id;
         }
+
+
+        public User() { }
 
         public override string ToString()
         {

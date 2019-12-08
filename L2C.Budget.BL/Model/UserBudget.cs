@@ -12,7 +12,7 @@ namespace L2C.Budget.BL.Model
         /// <summary>
         /// Идентификатор бюджета.
         /// </summary>
-        public int Id { get; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Создатель бюджета.
@@ -32,20 +32,22 @@ namespace L2C.Budget.BL.Model
         /// <summary>
         /// Имя.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Создать новый бюджет.
         /// </summary>
         /// <param name="name">Имя бюджета.</param>
-        public UserBudget(int id, string name)
+        public UserBudget(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException("Имя не может быть пустым или null", nameof(name));
             }
             Name = name;
-            Id = id;
         }
+
+
+        public UserBudget() { }
     }
 }

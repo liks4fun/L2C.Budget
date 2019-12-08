@@ -13,8 +13,6 @@ namespace L2C.Budget.BL.Controller
     /// </summary>
     public class UserController
     {
-        private const string USERS_FILE_NAME = "users.bin";
-        private const string BUDGETS_FILE_NAME = "budgets.bin";
 
         public delegate void BalanceHandler(string mes);
         /// <summary>
@@ -22,8 +20,7 @@ namespace L2C.Budget.BL.Controller
         /// </summary>
         public event BalanceHandler Notify;
 
-        private readonly IRepository<User> userRepository;
-        private readonly IRepository<UserBudget> budgetRepository;
+        private readonly IRepository repository;
 
         /// <summary>
         /// Текущий пользователь.
@@ -35,22 +32,14 @@ namespace L2C.Budget.BL.Controller
         /// </summary>
         public bool IsUserAuthen => CurrentUser is User ? true : false;
 
-        /// <summary>
-        /// Список всех пользователей.
-        /// </summary>
-        private List<User> Users { get; set; }
-        private List<UserBudget> Budgets { get; set; }
 
         /// <summary>
         /// Создание нового контроллера пользователя.
         /// </summary>
         /// <param name="user"></param>
-        public UserController(IRepository<User> uRepo, IRepository<UserBudget> bRepo)
+        public UserController(IRepository repo)
         {
-            userRepository = uRepo;
-            budgetRepository = bRepo;
-            Users = userRepository.Get(USERS_FILE_NAME);
-            Budgets = budgetRepository.Get(BUDGETS_FILE_NAME);
+            repository = repo;
         }
 
         /// <summary>
@@ -62,29 +51,7 @@ namespace L2C.Budget.BL.Controller
         /// <param name="budgetName">Имя бюджета.</param>
         public void CreateNewUser(string userName, string genderName, DateTime birthday, string budgetName)
         {
-            if(string.IsNullOrWhiteSpace(genderName))
-                throw new ArgumentNullException(nameof(genderName));
-            if (string.IsNullOrWhiteSpace(budgetName))
-                throw new ArgumentNullException(nameof(budgetName));
-            if (birthday.Year < 1900 || birthday > DateTime.Now)
-                throw new ArgumentException(nameof(birthday));
-            if (Users.Contains(Users.SingleOrDefault(u => u.Name == userName)))
-                throw new ArgumentException(nameof(userName));
-            UserBudget budget = Budgets.SingleOrDefault(b => b.Name == budgetName);
-            if (budget == null)
-            {
-                budget = new UserBudget(Budgets.Count, budgetName);
-                Budgets.Add(budget);
-            } 
-            else
-            {
-                throw new ArgumentException(nameof(budgetName));
-            }
-            Gender gender = new Gender(genderName);
-            var user = new User(userName, gender, birthday, budget.Id, Users.Count);
-            Users.Add(user);
-            userRepository.Save(Users, USERS_FILE_NAME);
-            budgetRepository.Save(Budgets, BUDGETS_FILE_NAME);
+            repository.CreateUser(userName, genderName, birthday, budgetName);
         }
 
         /// <summary>
@@ -95,12 +62,13 @@ namespace L2C.Budget.BL.Controller
         {
             if (string.IsNullOrWhiteSpace(userName))
                 throw new ArgumentNullException(nameof(userName));
-            var user = userRepository.Get(USERS_FILE_NAME).SingleOrDefault(u => u.Name == userName);
+            var user = repository.GetUser(userName);
             if (user == null)
                 throw new NewUserException(nameof(userName));
             else
                 CurrentUser = user;
-            user.Budget = Budgets.SingleOrDefault(b => b.Id == user.BudgetId);
+            user.Budget = repository.GetBudget(user.BudgetId);
+            user.Gender = repository.GetGender(user.GenderId);
         }
 
         /// <summary>
@@ -114,7 +82,7 @@ namespace L2C.Budget.BL.Controller
             if (CurrentUser == null || CurrentUser.Budget == null)
                 throw new ArgumentNullException(nameof(CurrentUser.Name));
             CurrentUser.Budget.Balance += amount;
-            budgetRepository.Save(Budgets, BUDGETS_FILE_NAME);
+            repository.SaveBudgets();
             Notify?.Invoke($"{CurrentUser.Name} {CurrentUser.Budget.Name} {amount:c}. {CurrentUser.Budget.Balance:c}");
         }
 
@@ -129,7 +97,7 @@ namespace L2C.Budget.BL.Controller
             if (CurrentUser == null || CurrentUser.Budget == null)
                 throw new ArgumentNullException(nameof(CurrentUser));
             CurrentUser.Budget.Balance -= amount;
-            budgetRepository.Save(Budgets, BUDGETS_FILE_NAME);
+            repository.SaveBudgets();
             Notify?.Invoke($"{CurrentUser.Name} {CurrentUser.Budget.Name} {amount:c}. {CurrentUser.Budget.Balance:c}");
         }
 
