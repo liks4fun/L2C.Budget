@@ -51,7 +51,11 @@ namespace Tests
             var mUser = new User("mock",
                     new Gender("MGender"),
                     DateTime.Today.AddYears(-21),
-                    new Budget("MBudget"));
+                    1,
+                    1)
+            {
+                Budget = new UserBudget(1, "mBudget2")
+            };
             var controller = GetUserController();
 
             //Act
@@ -73,11 +77,15 @@ namespace Tests
             var mUser1 = new User("mock1",
                     new Gender("M1Gender"),
                     DateTime.Today.AddYears(-20),
-                    new Budget("M1Budget"));
+                    0,
+                    0);
+            mUser1.Budget = new UserBudget(0, "mBudget1");
             mUser1.Budget.Balance += 1000f;
-            var mock = new Mock<IRepository>();
-            mock.Setup(r => r.GetUsers()).Returns(new List<User> { mUser1 });
-            var controller = new UserController(mock.Object);
+            var mock1 = new Mock<IRepository<User>>();
+            mock1.Setup(r => r.Get("users.bin")).Returns(new List<User> { mUser1 });
+            var mock2 = new Mock<IRepository<UserBudget>>();
+            mock2.Setup(r => r.Get("budgets.bin")).Returns(new List<UserBudget> { mUser1.Budget });
+            var controller = new UserController(mock1.Object, mock2.Object);
             return controller;
         }
     }

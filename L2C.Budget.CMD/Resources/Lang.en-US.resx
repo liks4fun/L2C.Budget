@@ -132,11 +132,14 @@
   <data name="ErrorAmount" xml:space="preserve">
     <value>Wrong amount.</value>
   </data>
+  <data name="ErrorBirthDate" xml:space="preserve">
+    <value>Wrong birthdate data!</value>
+  </data>
   <data name="ErrorBirthday" xml:space="preserve">
     <value>Wrong birth date</value>
   </data>
   <data name="ErrorBudgetName" xml:space="preserve">
-    <value>Budget name can't be empty.</value>
+    <value>Budget name can't be empty or it's already taken.</value>
   </data>
   <data name="ErrorGenderName" xml:space="preserve">
     <value>Gender can't be empty</value>

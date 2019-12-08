@@ -8,17 +8,17 @@ namespace L2C.Budget.BL.Model
     /// <summary>
     /// Репозиторий пользователей сохраненных в файле.
     /// </summary>
-    public class FileRepository : IRepository
+    public class FileRepository<T> : IRepository<T>
     {
         /// <summary>
         /// Сохранить данные пользователей в файл.
         /// </summary>
-        public void SaveUsers(List<User> Users)
+        public void Save(List<T> data, string fileName)
         {
             var formatter = new BinaryFormatter();
-            using (var fs = new FileStream("users.bin", FileMode.OpenOrCreate))
+            using (var fs = new FileStream(fileName, FileMode.OpenOrCreate))
             {
-                formatter.Serialize(fs, Users);
+                formatter.Serialize(fs, data);
             }
         }
 
@@ -27,15 +27,15 @@ namespace L2C.Budget.BL.Model
         /// Загрузить пользователей из файла.
         /// </summary>
         /// <returns>Пользователь приложения.</returns>
-        public List<User> GetUsers()
+        public List<T> Get(string fileName)
         {
             var formatter = new BinaryFormatter();
-            using (var fs = new FileStream("users.bin", FileMode.OpenOrCreate))
+            using (var fs = new FileStream(fileName, FileMode.OpenOrCreate))
             {
-                if (fs.Length > 0 && formatter.Deserialize(fs) is List<User> users)
-                    return users;
+                if (fs.Length > 0 && formatter.Deserialize(fs) is List<T> entities)
+                    return entities;
                 else
-                    return new List<User>();
+                    return new List<T>();
             }
         }
     }

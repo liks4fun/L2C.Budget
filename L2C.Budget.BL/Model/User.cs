@@ -9,6 +9,10 @@ namespace L2C.Budget.BL.Model
     public class User
     {
         /// <summary>
+        /// Идентификатор пользователя
+        /// </summary>
+        public int Id { get; }
+        /// <summary>
         /// Имя пользователя.
         /// </summary>
         public string Name { get; }
@@ -32,10 +36,12 @@ namespace L2C.Budget.BL.Model
             }
         }
 
+        [field: NonSerialized]
         /// <summary>
         /// Бюджет пользователя.
         /// </summary>
-        public Budget Budget { get; set; }
+        public UserBudget Budget { get; set; }
+        public int BudgetId { get; }
 
         /// <summary>
         /// Создать нового пользователя.
@@ -47,7 +53,8 @@ namespace L2C.Budget.BL.Model
         public User(string name,
                     Gender gender,
                     DateTime birthDate,
-                    Budget budget)
+                    int budgetId,
+                    int id)
         {
             #region Проверка входящих параметров.
             if (string.IsNullOrEmpty(name))
@@ -69,15 +76,12 @@ namespace L2C.Budget.BL.Model
                 throw new ArgumentException(nameof(birthDate), "Год рождения не подходящий.");
             }
 
-            //Бюджет не обязательное поле
-            if(budget != null)
-            {
-                Budget = budget;
-            }
             #endregion
             Name = name;
             Gender = gender;
             BirthDate = birthDate;
+            BudgetId = budgetId;
+            Id = id;
         }
 
         public override string ToString()

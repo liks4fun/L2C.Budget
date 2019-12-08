@@ -132,11 +132,14 @@
   <data name="ErrorAmount" xml:space="preserve">
     <value>Не верная сумма.</value>
   </data>
+  <data name="ErrorBirthDate" xml:space="preserve">
+    <value>Неправильная дата рождения!</value>
+  </data>
   <data name="ErrorBirthday" xml:space="preserve">
     <value>Не верная дата рождения.</value>
   </data>
   <data name="ErrorBudgetName" xml:space="preserve">
-    <value>Имя бюджета не может быть пустым.</value>
+    <value>Имя бюджета не может быть пустым или его уже кто-то использует.</value>
   </data>
   <data name="ErrorGenderName" xml:space="preserve">
     <value>Пол не может быть пустым.</value>

@@ -2,9 +2,9 @@
 
 namespace L2C.Budget.BL.Model
 {
-    public interface IRepository
+    public interface IRepository<T>
     {
-        void SaveUsers(List<User> users);
-        List<User> GetUsers();
+        void Save(List<T> list, string fileName);
+        List<T> Get(string fileName);
     }
 }

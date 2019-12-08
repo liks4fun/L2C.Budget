@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace L2C.Budget.BL.Model
 {
@@ -6,8 +7,23 @@ namespace L2C.Budget.BL.Model
     /// Бюджет
     /// </summary>
     [Serializable]
-    public class Budget
+    public class UserBudget
     {
+        /// <summary>
+        /// Идентификатор бюджета.
+        /// </summary>
+        public int Id { get; }
+
+        /// <summary>
+        /// Создатель бюджета.
+        /// </summary>
+        public int OwnerId { get; }
+
+        /// <summary>
+        /// Список пользователей бюджета.
+        /// </summary>
+        public List<int> BudgetUsersIds { get; }
+
         /// <summary>
         /// Баланс.
         /// </summary>
@@ -22,14 +38,14 @@ namespace L2C.Budget.BL.Model
         /// Создать новый бюджет.
         /// </summary>
         /// <param name="name">Имя бюджета.</param>
-        public Budget(string name)
+        public UserBudget(int id, string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException("Имя не может быть пустым или null", nameof(name));
             }
             Name = name;
-            Balance = 0.0f;
+            Id = id;
         }
     }
 }

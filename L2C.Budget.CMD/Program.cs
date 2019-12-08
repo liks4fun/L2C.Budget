@@ -28,7 +28,7 @@ namespace L2C.Budget.CMD
             Console.WriteLine(resourceManager.GetString("Hello", culture));
 
             var userName = GetUserInput(resourceManager.GetString("EnterName", culture));
-            UserController controller = new UserController(new FileRepository());
+            UserController controller = new UserController(new FileRepository<User>(), new FileRepository<UserBudget>());
 
             //Аутентифицируем пользователя.
             do
@@ -48,11 +48,7 @@ namespace L2C.Budget.CMD
                     Console.WriteLine(resourceManager.GetString("ErrorUserExist", culture) + userName);
                     var genderName = GetUserInput($"{userName}, " + resourceManager.GetString("RegisterGender", culture));
 
-                    //TODO: вынести в отдельный метод с проверкой.
-                    var year = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthYear", culture)));
-                    var month = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthMonth", culture)));
-                    var day = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthDay", culture)));
-                    DateTime birthday = new DateTime(year, month, day);
+                    DateTime birthday = GetUserBirthDate(culture, resourceManager);
 
                     var budgetName = GetUserInput(resourceManager.GetString("RegisterBudgetName", culture));
                     try
@@ -61,7 +57,7 @@ namespace L2C.Budget.CMD
                     }
                     catch (ArgumentException except)
                     {
-                        switch(except.Message)
+                        switch (except.Message)
                         {
                             case "userName":
                                 Console.WriteLine(resourceManager.GetString("ErrorUserName", culture));
@@ -91,7 +87,7 @@ namespace L2C.Budget.CMD
             {
                 try
                 {
-                    var userState = controller.GetUserBalance(); 
+                    var userState = controller.GetUserBalance();
                     Console.WriteLine(resourceManager.GetString("HelpQuit", culture));
                     Console.WriteLine(resourceManager.GetString("HelpAddMoney", culture));
                     Console.WriteLine(resourceManager.GetString("HelpWithdrawMoney", culture));
@@ -172,7 +168,7 @@ namespace L2C.Budget.CMD
                     Console.WriteLine(resourceManager.GetString("ErrorUserState", culture));
                     continue;
                 }
-                
+
             }
         }
 
@@ -185,6 +181,24 @@ namespace L2C.Budget.CMD
         {
             Console.WriteLine(message);
             return Console.ReadLine();
+        }
+
+        public static DateTime GetUserBirthDate(CultureInfo culture, ResourceManager resourceManager)
+        {
+            DateTime result;
+            while(true)
+            {
+                var year = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthYear", culture)));
+                var month = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthMonth", culture)));
+                var day = int.Parse(GetUserInput(resourceManager.GetString("RegisterBirthDay", culture)));
+
+                if (DateTime.TryParse($"{year}.{month}.{day}", out result))
+                    break;
+                Console.WriteLine(resourceManager.GetString("ErrorBirthDate", culture));
+            }
+
+            return result;
+
         }
     }
 }
