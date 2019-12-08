@@ -98,12 +98,13 @@ namespace L2C.Budget.CMD
                     Console.WriteLine($"{userState.userName}" +
                         resourceManager.GetString("DisplayState", culture) +
                         $" {userState.budgetName} {userState.balance:c}");
-                    switch (Console.ReadLine())
+                    var key = Console.ReadKey();
+                    switch (key.Key)
                     {
-                        case "q":
+                        case ConsoleKey.Q:
                             Environment.Exit(0);
                             break;
-                        case "a":
+                        case ConsoleKey.A:
                             Console.WriteLine(resourceManager.GetString("AddMoney", culture));
                             var addAmount = Console.ReadLine();
                             float AddAmountF = 0f;
@@ -131,7 +132,7 @@ namespace L2C.Budget.CMD
                             else
                                 Console.WriteLine(resourceManager.GetString("ErrorAmount", culture));
                             break;
-                        case "r":
+                        case ConsoleKey.R:
                             Console.WriteLine(resourceManager.GetString("WithdrawMoney", culture));
                             var removeAmount = Console.ReadLine();
                             float removeAmountF = 0f;
